@@ -1,0 +1,8 @@
+# @package _global_
+
+max_explore_step: 5e5
+n_traj: 100
+
+env_name: Protoss5v5
+data_path: data/Protoss5v5_100.pkl
+dim_c: [3, 3, 3, 3, 3]

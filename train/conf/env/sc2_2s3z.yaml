@@ -1,0 +1,8 @@
+# @package _global_
+
+max_explore_step: 5e5
+n_traj: 100
+
+env_name: sc2_2s3z
+data_path: data/sc2_2s3z_100.pkl
+dim_c: [4, 4, 4, 4, 4]

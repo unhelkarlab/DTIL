@@ -1,0 +1,8 @@
+# @package _global_
+
+max_explore_step: 1e5
+n_traj: 50
+
+env_name: PO_Flood-v2
+data_path: data/PO_Flood-v2_100.pkl
+dim_c: [4, 4]

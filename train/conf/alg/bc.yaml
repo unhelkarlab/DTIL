@@ -1,0 +1,27 @@
+# @package _global_
+
+alg_name: bc
+device: cuda:0
+# policy
+hidden_policy: [256, 256]
+optimizer_lr_policy: 1.e-3
+
+# for continuous action space
+log_std_bounds: [-5., 2.]
+bounded: False
+use_nn_logstd: False
+clamp_action_logstd: False # True: use clamp() / False: use tanh
+
+log_interval: 500
+eval_interval: 1000
+
+mini_batch_size: 256
+n_batches: 20000
+seed: 0
+
+# in case env is not given, set the followings
+n_agents: 2
+dim_obs: [10, 10]
+discrete_obs: [False, False]
+dim_act: [5, 5]
+discrete_act: [False, False]

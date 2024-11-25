@@ -1,0 +1,16 @@
+# @package _global_
+
+defaults:
+  - mahil_LaborDivision_default
+
+mahil_pi_method_div: chi
+mahil_pi_method_loss: value
+mahil_pi_method_regularize: False
+
+n_sample: 30000
+demo_latent_infer_interval: 1000
+
+# exp settings 
+max_explore_step: 1e5
+eval_interval: 10000
+log_interval: 1000

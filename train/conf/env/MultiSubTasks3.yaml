@@ -1,0 +1,8 @@
+# @package _global_
+
+defaults:
+  - MultiSubTasks_common
+
+env_name: MultiSubTasks3
+data_path: data/MultiSubTasks3_100.pkl
+dim_c: [3, 3]
