@@ -3,12 +3,10 @@ import numpy as np
 from omegaconf import DictConfig
 from pettingzoo.utils.env import ParallelEnv
 from gymnasium.spaces import Discrete, Box
-from gym.spaces import Discrete as GymDiscrete
-from gym.spaces import Box as GymBox
 from .option_gail import OptionGAIL, GAIL
 from .option_ppo import OptionPPO, PPO
-from aic_ml.MAHIL.helper.utils import (conv_input, conv_tuple_input,
-                                       split_by_size)
+from ....helper.utils import (conv_input, conv_tuple_input, split_by_size,
+                              InterfaceHAgent)
 
 
 def make_agent(config: DictConfig, env: ParallelEnv, agent_idx, use_option):
@@ -17,7 +15,7 @@ def make_agent(config: DictConfig, env: ParallelEnv, agent_idx, use_option):
   latent_dim = config.dim_c[agent_idx] if use_option else 0
 
   obs_space = env.observation_space(agent_name)
-  if isinstance(obs_space, Discrete) or isinstance(obs_space, GymDiscrete):
+  if isinstance(obs_space, Discrete):
     obs_dim = obs_space.n
     discrete_obs = True
   else:
@@ -30,13 +28,11 @@ def make_agent(config: DictConfig, env: ParallelEnv, agent_idx, use_option):
   list_discrete_others_action = []
   for name in env.agents:
     act_space = env.action_space(name)
-    if not (isinstance(act_space, Discrete)
-            or isinstance(act_space, GymDiscrete) or isinstance(act_space, Box)
-            or isinstance(act_space, GymBox)):
+    if not (isinstance(act_space, Discrete) or isinstance(act_space, Box)):
       raise RuntimeError(
           "Invalid action space: Only Discrete and Box action spaces supported")
 
-    if isinstance(act_space, Discrete) or isinstance(act_space, GymDiscrete):
+    if isinstance(act_space, Discrete):
       tmp_action_dim = act_space.n
       tmp_discrete_act = True
     else:
@@ -61,7 +57,7 @@ def make_agent(config: DictConfig, env: ParallelEnv, agent_idx, use_option):
   return agent
 
 
-class MA_OGAIL:
+class MA_OGAIL(InterfaceHAgent):
 
   def __init__(self,
                config: DictConfig,

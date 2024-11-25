@@ -2,8 +2,6 @@ from .mahil import MAHIL
 from omegaconf import DictConfig
 from pettingzoo.utils.env import ParallelEnv
 from gymnasium.spaces import Discrete, Box
-from gym.spaces import Discrete as GymDiscrete
-from gym.spaces import Box as GymBox
 
 
 def make_mahil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
@@ -11,7 +9,7 @@ def make_mahil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
   agent_name = env.agents[agent_idx]
   latent_dim = config.dim_c[agent_idx]
   obs_space = env.observation_space(agent_name)
-  if isinstance(obs_space, Discrete) or isinstance(obs_space, GymDiscrete):
+  if isinstance(obs_space, Discrete):
     obs_dim = obs_space.n
     discrete_obs = True
   else:
@@ -22,13 +20,11 @@ def make_mahil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
   list_discrete_aux = []
   for name in env.agents:
     act_space = env.action_space(name)
-    if not (isinstance(act_space, Discrete)
-            or isinstance(act_space, GymDiscrete) or isinstance(act_space, Box)
-            or isinstance(act_space, GymBox)):
+    if not (isinstance(act_space, Discrete) or isinstance(act_space, Box)):
       raise RuntimeError(
           "Invalid action space: Only Discrete and Box action spaces supported")
 
-    if isinstance(act_space, Discrete) or isinstance(act_space, GymDiscrete):
+    if isinstance(act_space, Discrete):
       tmp_action_dim = act_space.n
       tmp_discrete_act = True
     else:

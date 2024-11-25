@@ -1,9 +1,8 @@
 from typing import Type
 import torch
 import torch.nn as nn
-from torch.distributions import Categorical, Normal
-from aic_ml.baselines.IQLearn.agent.sac_models import (SquashedNormal,
-                                                       GumbelSoftmax)
+from torch.distributions import Normal
+from ...helper.transformed_distributions import SquashedNormal
 
 
 def weight_init(m):

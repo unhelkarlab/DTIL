@@ -5,13 +5,12 @@ import numpy as np
 from collections import defaultdict
 from typing import Dict, Any
 from itertools import count
-from aic_ml.baselines.option_gail.utils.logger import Logger
+from .utils.logger import Logger
 import wandb
 import omegaconf
 from pettingzoo.utils.env import ParallelEnv
-from aic_ml.MAHIL.train_mahil import (load_multiagent_data_w_labels,
-                                      infer_mental_states_all_demo)
-from aic_ml.MAHIL.helper.utils import evaluate
+from ...helper.utils import (load_multiagent_data_w_labels,
+                             infer_mental_states_all_demo, evaluate)
 from .model.agent import make_agent, MA_OGAIL
 
 

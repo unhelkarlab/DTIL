@@ -49,20 +49,20 @@ def run_alg(config):
   fn_env_factory, env_kwargs = envgen.env_generator(config)
 
   if alg_name == "mahil" or alg_name == "iiql":
-    from aic_ml.MAHIL.train_mahil import train
+    from dtil.DTIL.train import train
     train(config, demo_path, log_dir, output_dir, fn_env_factory, log_interval,
           eval_interval, env_kwargs)
   elif alg_name == "maogail":
-    from aic_ml.baselines.ma_ogail.train_ma_ogail import learn
+    from dtil.baselines.ma_ogail.train import learn
     learn(config, True, demo_path, log_dir, output_dir, fn_env_factory,
           pretrain_name, eval_interval, env_kwargs)
   elif alg_name == "magail":
-    from aic_ml.baselines.ma_ogail.train_ma_ogail import learn
+    from dtil.baselines.ma_ogail.train import learn
     learn(config, False, demo_path, log_dir, output_dir, fn_env_factory,
           pretrain_name, eval_interval, env_kwargs)
   # add (multi-agent) bc
   elif alg_name == "bc":
-    from aic_ml.baselines.bc import train_bc
+    from dtil.baselines.bc.train import train_bc
     train_bc(config, demo_path, log_dir, output_dir, fn_env_factory,
              log_interval, eval_interval, env_kwargs)
 

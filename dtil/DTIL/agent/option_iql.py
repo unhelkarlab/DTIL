@@ -1,16 +1,16 @@
 from typing import Type, Callable
 import torch
 import torch.nn as nn
-from aic_ml.baselines.IQLearn.utils.utils import (average_dicts, soft_update,
-                                                  hard_update)
-from aic_ml.baselines.IQLearn.iq import iq_loss, OFFLINE_METHOD_LOSS
-from ..helper.utils import get_concat_samples
+from ...helper.utils import average_dicts, soft_update, hard_update
+from ...helper.iq import iq_loss, OFFLINE_METHOD_LOSS
+from ...helper.utils import get_concat_samples
 from .option_softq import OptionSoftQ
 from .option_sac import OptionSAC
 from omegaconf import DictConfig
 
 
 class IQMixin:
+
   def get_iq_variables(self, batch):
     'return vec_v_args, vec_next_v_args, vec_actions'
     raise NotImplementedError
@@ -148,6 +148,7 @@ class IQMixin:
 
 
 class IQLOptionSoftQ(IQMixin, OptionSoftQ):
+
   def __init__(self, config: DictConfig, tup_obs_dim, action_dim, option_dim,
                tup_discrete_obs, q_net_base: Type[nn.Module],
                cb_get_iq_variables: Callable):
@@ -164,6 +165,7 @@ class IQLOptionSoftQ(IQMixin, OptionSoftQ):
 
 
 class IQLOptionSAC(IQMixin, OptionSAC):
+
   def __init__(self, config: DictConfig, tup_obs_dim, action_dim, option_dim,
                tup_discrete_obs, critic_base: Type[nn.Module], actor,
                cb_get_iq_variables: Callable):

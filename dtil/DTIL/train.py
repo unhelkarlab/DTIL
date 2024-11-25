@@ -5,101 +5,15 @@ import torch
 from itertools import count
 from torch.utils.tensorboard import SummaryWriter
 from collections import deque
-from aic_ml.baselines.IQLearn.utils.utils import (eval_mode)
-from aic_ml.baselines.IQLearn.utils.logger import Logger
-from aic_ml.OptionIQL.helper.option_memory import (OptionMemory)
-from .helper.utils import (get_expert_batch, get_samples, conv_samples_tup2dict,
-                           load_trajectories, save, evaluate)
+from ..helper.utils import eval_mode
+from ..helper.logger import Logger
+from ..helper.option_memory import OptionMemory
+from ..helper.utils import (get_expert_batch, get_samples,
+                            conv_samples_tup2dict, save, evaluate)
 from .agent import MAHIL, make_mahil_agent
 import wandb
 import omegaconf
 from pettingzoo.utils.env import ParallelEnv  # noqa: F401
-
-
-def load_multiagent_data_w_labels(list_agent_names: Sequence[Any],
-                                  dict_agents: Dict[Any, MAHIL], demo_path,
-                                  num_trajs, n_labeled, seed):
-  list_expert_trajs = load_trajectories(demo_path, num_trajs, seed + 42)
-  n_samples = sum(list_expert_trajs[0]["lengths"])
-  num_trajs = len(list_expert_trajs[0]["lengths"])
-
-  dict_expert_trajs = {}
-  dict_expert_labels = {}
-  for i_a in range(len(list_expert_trajs)):
-    agent_traj = list_expert_trajs[i_a]
-    agent_name = list_agent_names[i_a]
-
-    cnt_label = 0
-    traj_labels = []
-    for i_e in range(num_trajs):
-      if "latents" in agent_traj:
-        expert_latents = agent_traj["latents"][i_e]
-      else:
-        expert_latents = None
-
-      if i_e < n_labeled:
-        traj_labels.append(expert_latents)
-        cnt_label += 1
-      else:
-        traj_labels.append(None)
-
-    # create "prev_auxs"
-    init_aux = np.array(dict_agents[agent_name].PREV_AUX).reshape(-1)
-    aux_dim = len(init_aux)
-    list_prev_auxs = []
-    if "auxs" in agent_traj:
-      for i_e in range(num_trajs):
-        expert_auxs = np.array(agent_traj["auxs"][i_e][:-1]).reshape(
-            -1, aux_dim)
-        expert_prev_auxs = np.vstack([init_aux, expert_auxs])
-        list_prev_auxs.append(expert_prev_auxs)
-    # create dummy "auxs" if not exists
-    else:
-      agent_traj["auxs"] = []
-      for i_e in range(num_trajs):
-        epi_len = agent_traj["lengths"][i_e]
-        agent_traj["auxs"].append([init_aux] * epi_len)
-        list_prev_auxs.append([init_aux] * epi_len)
-
-    agent_traj["prev_auxs"] = list_prev_auxs
-
-    dict_expert_trajs[agent_name] = agent_traj
-    dict_expert_labels[agent_name] = traj_labels
-
-  print(f"num_labeled: {cnt_label} / {num_trajs}, num_samples: ", n_samples)
-  return dict_expert_trajs, dict_expert_labels, cnt_label, n_samples
-
-
-def infer_mental_states_all_demo(agent: MAHIL, expert_traj, traj_labels):
-  num_samples = len(expert_traj["states"])
-  list_mental_states = []
-  for i_e in range(num_samples):
-    if traj_labels[i_e] is None:
-      expert_states = expert_traj["states"][i_e]
-      expert_actions = expert_traj["actions"][i_e]
-      expert_prev_auxs = expert_traj["prev_auxs"][i_e]
-
-      mental_array, _ = agent.infer_mental_states(expert_states, expert_actions,
-                                                  expert_prev_auxs)
-    else:
-      mental_array = traj_labels[i_e]
-
-    list_mental_states.append(mental_array)
-
-  return list_mental_states
-
-
-def infer_last_next_mental_state(agent: MAHIL, expert_traj, list_mental_states):
-  num_samples = len(expert_traj["states"])
-  list_last_next_mental_state = []
-  for i_e in range(num_samples):
-    last_next_state = expert_traj["next_states"][i_e][-1]
-    last_mental_state = list_mental_states[i_e][-1]
-    last_next_mental_state = agent.choose_mental_state(last_next_state,
-                                                       last_mental_state, False)
-    list_last_next_mental_state.append(last_next_mental_state)
-
-  return list_last_next_mental_state
 
 
 def train(config: omegaconf.DictConfig,

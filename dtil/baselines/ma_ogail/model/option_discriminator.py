@@ -1,13 +1,12 @@
 import torch
-from aic_ml.baselines.option_gail.utils.model_util import (make_module,
-                                                           make_module_list,
-                                                           make_activation)
+from ..utils.model_util import make_module, make_module_list, make_activation
 from omegaconf import DictConfig
 
 # This file should be included by option_gail.py and never be used otherwise
 
 
 class Discriminator(torch.nn.Module):
+
   def __init__(self, config: DictConfig, dim_s, dim_a):
     super(Discriminator, self).__init__()
     self.dim_a = dim_a
@@ -41,6 +40,7 @@ class Discriminator(torch.nn.Module):
 
 
 class OptionDiscriminator(torch.nn.Module):
+
   def __init__(self, config: DictConfig, dim_s, dim_a, dim_c):
     super(OptionDiscriminator, self).__init__()
     self.dim_a = dim_a

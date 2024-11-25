@@ -1,13 +1,12 @@
 import torch
-from aic_ml.baselines.option_gail.utils.model_util import (make_module,
-                                                           make_module_list,
-                                                           make_activation)
+from ..utils.model_util import make_module, make_module_list, make_activation
 from omegaconf import DictConfig
 
 # This file should be included by option_ppo.py and never be used otherwise
 
 
 class Critic(torch.nn.Module):
+
   def __init__(self, config: DictConfig, dim_s):
     super(Critic, self).__init__()
     self.dim_s = dim_s
@@ -28,6 +27,7 @@ class Critic(torch.nn.Module):
 
 
 class OptionCritic(torch.nn.Module):
+
   def __init__(self, config, dim_s, dim_c):
     super(OptionCritic, self).__init__()
     self.dim_s = dim_s

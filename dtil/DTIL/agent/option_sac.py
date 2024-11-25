@@ -4,7 +4,7 @@ import torch
 import torch.nn.functional as F
 import torch.nn as nn
 from torch.optim import Adam
-from aic_ml.baselines.IQLearn.utils.utils import soft_update
+from ...helper.utils import soft_update
 from .nn_models import AbstractOptionActor
 from .option_abstract import AbstractPolicyLeaner
 from omegaconf import DictConfig

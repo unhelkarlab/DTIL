@@ -2,7 +2,7 @@ import abc
 import torch
 import numpy as np
 from omegaconf import DictConfig
-from ..helper.utils import conv_input, conv_tuple_input
+from ...helper.utils import conv_input, conv_tuple_input
 
 
 class AbstractPolicyLeaner(abc.ABC):
@@ -19,7 +19,8 @@ class AbstractPolicyLeaner(abc.ABC):
     return conv_input(batch_input, is_onehot_needed, dimension, self.device)
 
   def conv_tuple_input(self, tup_batch, tup_is_onehot_needed, tup_dimension):
-    return conv_tuple_input(tup_batch, tup_is_onehot_needed, tup_dimension, self.device)
+    return conv_tuple_input(tup_batch, tup_is_onehot_needed, tup_dimension,
+                            self.device)
 
   @abc.abstractmethod
   def reset_optimizers(self, config: DictConfig):

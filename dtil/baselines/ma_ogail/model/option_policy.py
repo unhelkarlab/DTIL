@@ -1,9 +1,7 @@
 import math
 import torch
 import torch.nn.functional as F
-from aic_ml.baselines.option_gail.utils.model_util import (make_module,
-                                                           make_module_list,
-                                                           make_activation)
+from ..utils.model_util import (make_module, make_module_list, make_activation)
 from omegaconf import DictConfig
 
 # this policy uses one-step option, the initial option is fixed as o=dim_c

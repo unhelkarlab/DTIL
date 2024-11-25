@@ -5,6 +5,7 @@ from omegaconf import DictConfig
 
 
 class PPO:
+
   def __init__(self, config: DictConfig, policy: Policy, critic_dim):
     self.policy = policy
     self.clip_eps = config.clip_eps
@@ -76,6 +77,7 @@ class PPO:
 
 
 class OptionPPO(torch.nn.Module):
+
   def __init__(self, config: DictConfig, policy: OptionPolicy, critic_dim):
     super(OptionPPO, self).__init__()
     self.train_policy = config.train_policy

@@ -4,7 +4,7 @@ from .nn_models import (SimpleOptionQNetwork, DoubleOptionQCritic,
                         SingleOptionQCritic, DiagGaussianOptionActor)
 from .option_iql import IQLOptionSAC, IQLOptionSoftQ
 from omegaconf import DictConfig
-from ..helper.utils import split_by_size
+from ...helper.utils import split_by_size, InterfaceHAgent
 
 
 def get_tx_pi_config(config: DictConfig):
@@ -26,7 +26,7 @@ def get_tx_pi_config(config: DictConfig):
   return config_tx, config_pi
 
 
-class MAHIL:
+class MAHIL(InterfaceHAgent):
 
   def __init__(self, config: DictConfig, obs_dim, action_dim, lat_dim,
                tup_aux_dim, discrete_obs, discrete_act, tup_discrete_aux):

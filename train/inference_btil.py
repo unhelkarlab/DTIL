@@ -4,9 +4,9 @@ import torch
 import os
 import pandas as pd
 from aic_core.utils.result_utils import hamming_distance
-from aic_ml.MAHIL.helper.utils import load_trajectories, evaluate
-from pettingzoo_domain.po_movers_v2 import PO_Movers_V2
-from pettingzoo_domain.po_flood_v2 import PO_Flood_V2
+from dtil.helper.utils import load_trajectories, evaluate
+from dtil.pettingzoo_envs.po_movers_v2 import PO_Movers_V2
+from dtil.pettingzoo_envs.po_flood_v2 import PO_Flood_V2
 import run_btil
 
 

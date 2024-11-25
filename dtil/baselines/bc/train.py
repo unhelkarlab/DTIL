@@ -11,13 +11,10 @@ from torch.utils.tensorboard import SummaryWriter
 import wandb
 import omegaconf
 from gymnasium.spaces import Discrete, Box
-from gym.spaces import Discrete as GymDiscrete
-from gym.spaces import Box as GymBox
-from .IQLearn.utils.logger import Logger
-from .IQLearn.agent.sac_models import AbstractActor
-from .IQLearn.agent.sac_models import DiscreteActor, DiagGaussianActor
-from aic_ml.MAHIL.helper.utils import conv_input, load_trajectories
 from pettingzoo.utils.env import ParallelEnv  # noqa: F401
+from ...helper.logger import Logger
+from ...helper.utils import conv_input, load_trajectories
+from .model import AbstractActor, DiagGaussianActor, DiscreteActor
 
 
 class BehaviorCloning:
@@ -68,20 +65,20 @@ def get_obs_act_space_info(env: ParallelEnv, agent_idx):
   agent_name = env.agents[agent_idx]
   obs_space = env.observation_space(agent_name)
 
-  if isinstance(obs_space, Discrete) or isinstance(obs_space, GymDiscrete):
+  if isinstance(obs_space, Discrete):
     dim_obs = obs_space.n
     discrete_obs = True
-  elif isinstance(obs_space, Box) or isinstance(obs_space, GymBox):
+  elif isinstance(obs_space, Box):
     dim_obs = obs_space.shape[0]
     discrete_obs = False
   else:
     raise ValueError("Unsupported observation space")
 
   act_space = env.action_space(agent_name)
-  if isinstance(act_space, Discrete) or isinstance(act_space, GymDiscrete):
+  if isinstance(act_space, Discrete):
     dim_act = act_space.n
     discrete_act = True
-  elif isinstance(act_space, Box) or isinstance(act_space, GymBox):
+  elif isinstance(act_space, Box):
     dim_act = act_space.shape[0]
     discrete_act = False
   else:

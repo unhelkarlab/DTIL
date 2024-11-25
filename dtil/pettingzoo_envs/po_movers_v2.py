@@ -2,13 +2,13 @@ import os
 import pickle
 import functools
 from collections import defaultdict
-from aic_core.models.policy import CachedPolicyInterface
 import gymnasium
 from gymnasium.spaces import Discrete, Box
 from gymnasium.utils import seeding
 import numpy as np
 
 from pettingzoo import ParallelEnv
+from aic_core.models.policy import CachedPolicyInterface
 from aic_domain.box_push_v2.mdp import (MDP_Movers_Agent, MDP_Movers_Task)
 from aic_domain.box_push_v2.maps import MAP_MOVERS
 from aic_core.utils.mdp_utils import StateSpace
