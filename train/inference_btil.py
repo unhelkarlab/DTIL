@@ -3,11 +3,21 @@ from omegaconf import OmegaConf
 import torch
 import os
 import pandas as pd
-from aic_core.utils.result_utils import hamming_distance
 from dtil.helper.utils import load_trajectories, evaluate
 from dtil.pettingzoo_envs.po_movers_v2 import PO_Movers_V2
 from dtil.pettingzoo_envs.po_flood_v2 import PO_Flood_V2
 import run_btil
+
+
+def hamming_distance(seq1, seq2):
+  assert len(seq1) == len(seq2)
+
+  count = 0
+  for idx, elem in enumerate(seq1):
+    if elem != seq2[idx]:
+      count += 1
+
+  return count
 
 
 def get_stats_about_x(list_inferred_x, list_true_x):

@@ -6,18 +6,15 @@ import gymnasium
 from gymnasium.spaces import Discrete, Box
 from gymnasium.utils import seeding
 import numpy as np
-
 from pettingzoo import ParallelEnv
-from aic_core.models.policy import CachedPolicyInterface
-from aic_domain.box_push_v2.mdp import (MDP_Movers_Agent, MDP_Movers_Task)
-from aic_domain.box_push_v2.maps import MAP_MOVERS
-from aic_core.utils.mdp_utils import StateSpace
-from aic_domain.box_push.define import BoxState
-from aic_domain.box_push_v2.agent import BoxPushAIAgent_PO_Team
-from aic_domain.box_push_v2.policy import Policy_Movers
-from aic_domain.agent import AIAgent_PartialObs
-from aic_domain.box_push_v2 import (conv_box_idx_2_state, conv_box_state_2_idx,
-                                    BoxState, AGENT_ACTIONSPACE)
+
+from TMM.models.policy import CachedPolicyInterface
+from TMM.domains.box_push_truck.mdp import MDP_Movers_Agent, MDP_Movers_Task
+from TMM.domains.box_push_truck.maps import MAP_MOVERS
+from TMM.domains.box_push_truck.agent import BoxPushAIAgent_PO_Team
+from TMM.domains.box_push_truck.policy import Policy_Movers
+from TMM.domains.box_push_truck import (conv_box_state_2_idx, BoxState,
+                                        AGENT_ACTIONSPACE)
 
 
 class PO_Movers_V2(ParallelEnv):

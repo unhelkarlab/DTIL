@@ -8,11 +8,11 @@ from gymnasium.utils import seeding
 import numpy as np
 from pettingzoo import ParallelEnv
 
-from aic_domain.rescue.agent import AIAgent_Rescue_PartialObs
-from aic_domain.rescue.maps import MAP_RESCUE
-from aic_domain.rescue.policy import Policy_Rescue
-from aic_domain.rescue.mdp import MDP_Rescue_Agent, MDP_Rescue_Task
-from aic_domain.rescue import (Location, E_Type, get_score, AGENT_ACTIONSPACE)
+from TMM.domains.rescue.agent import AIAgent_Rescue_PartialObs
+from TMM.domains.rescue.maps import MAP_RESCUE
+from TMM.domains.rescue.policy import Policy_Rescue
+from TMM.domains.rescue.mdp import MDP_Rescue_Agent, MDP_Rescue_Task
+from TMM.domains.rescue import Location, E_Type, get_score, AGENT_ACTIONSPACE
 
 
 class PO_Flood_V2(ParallelEnv):

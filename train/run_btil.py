@@ -7,10 +7,11 @@ import click
 from dtil.helper.utils import load_trajectories
 from dtil.pettingzoo_envs.po_movers_v2 import PO_Movers_V2
 from dtil.pettingzoo_envs.po_flood_v2 import PO_Flood_V2
-from aic_core.utils.mdp_utils import StateSpace
-from aic_domain.box_push_v2 import AGENT_ACTIONSPACE as MOVERS_ACTIONSPACE
-from aic_domain.rescue import AGENT_ACTIONSPACE as FLOOD_ACTIONSPACE
-from aic_ml.BTIL.btil_svi import BTIL_SVI
+from BTIL.btil_svi import BTIL_SVI
+
+from TMM.models.mdp import StateSpace
+from TMM.domains.box_push_truck import AGENT_ACTIONSPACE as MOVERS_ACTIONSPACE
+from TMM.domains.rescue import AGENT_ACTIONSPACE as FLOOD_ACTIONSPACE
 
 
 def one_hot(n, dim):
