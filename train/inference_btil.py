@@ -7,30 +7,7 @@ from dtil.helper.utils import load_trajectories, evaluate
 from dtil.pettingzoo_envs.po_movers_v2 import PO_Movers_V2
 from dtil.pettingzoo_envs.po_flood_v2 import PO_Flood_V2
 import run_btil
-
-
-def hamming_distance(seq1, seq2):
-  assert len(seq1) == len(seq2)
-
-  count = 0
-  for idx, elem in enumerate(seq1):
-    if elem != seq2[idx]:
-      count += 1
-
-  return count
-
-
-def get_stats_about_x(list_inferred_x, list_true_x):
-  dis_array = []
-  length_array = []
-  for i_e, inferred_x in enumerate(list_inferred_x):
-    res = hamming_distance(inferred_x, list_true_x[i_e])
-    dis_array.append(res)
-    length_array.append(len(inferred_x))
-
-  dis_array = np.array(dis_array)
-  length_array = np.array(length_array)
-  return dis_array, length_array
+import inference
 
 
 def load_btil_agent(model_dir, env_name, agent_idx, model_num, supervision):
@@ -102,7 +79,7 @@ def infer_latent_result_btil(model_dir, env_name, agent_idx, supervision,
     inferred_x = infer_mental_states(states, actions, pi, tx, bx)
     list_inferred_x.append(inferred_x)
 
-  ham_dists, lengths = get_stats_about_x(list_inferred_x, list_true_x)
+  ham_dists, lengths = inference.get_stats_about_x(list_inferred_x, list_true_x)
   accuracy = 1 - np.sum(ham_dists) / np.sum(lengths)
 
   return accuracy

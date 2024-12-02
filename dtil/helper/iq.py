@@ -40,7 +40,11 @@ def iq_loss(agent,
   # keep track of value of initial states
   vec_v_args_expert = []
   for arg in vec_v_args:
-    vec_v_args_expert.append(arg[is_expert.squeeze(1), ...])
+    if isinstance(arg, tuple):
+      arg_new = [item[is_expert.squeeze(1), ...] for item in arg]
+      vec_v_args_expert.append(tuple(arg_new))
+    else:
+      vec_v_args_expert.append(arg[is_expert.squeeze(1), ...])
 
   v0 = agent.getV(*vec_v_args_expert).mean()
   loss_dict['v0'] = v0.item()

@@ -8,8 +8,10 @@ from collections import deque
 from ..helper.utils import eval_mode
 from ..helper.logger import Logger
 from ..helper.option_memory import OptionMemory
-from ..helper.utils import (get_expert_batch, get_samples,
-                            conv_samples_tup2dict, save, evaluate)
+from ..helper.utils import (load_multiagent_data_w_labels,
+                            infer_mental_states_all_demo,
+                            infer_last_next_mental_state, get_expert_batch,
+                            get_samples, conv_samples_tup2dict, save, evaluate)
 from .agent import MAHIL, make_mahil_agent
 import wandb
 import omegaconf
@@ -23,7 +25,8 @@ def train(config: omegaconf.DictConfig,
           cb_env_factory,
           log_interval=500,
           eval_interval=5000,
-          env_kwargs={}):
+          env_kwargs={},
+          cb_ex_eval=None):
 
   env_name = config.env_name
   seed = config.seed
@@ -194,6 +197,11 @@ def train(config: omegaconf.DictConfig,
         logger.log('eval/episode_reward', mean_ret_sum, explore_steps)
         logger.log('eval/episode_step', np.mean(eval_timesteps), explore_steps)
         logger.log('eval/win_rate', np.mean(wins), explore_steps)
+
+        if cb_ex_eval is not None:
+          dict_ex_metrics = cb_ex_eval(dict_agents, env.agents)
+          for key, val in dict_ex_metrics.items():
+            logger.log(f'eval/{key}', val, explore_steps)
 
         logger.dump(explore_steps, ty='eval')
 
