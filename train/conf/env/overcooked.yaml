@@ -1,8 +1,0 @@
-# @package _global_
-
-max_explore_step: 2e5
-n_traj: 50
-
-env_name: overcooked
-data_path: data/overcooked-30-20_50.pkl
-dim_c: [7, 7]

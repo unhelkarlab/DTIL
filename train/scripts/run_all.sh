@@ -11,13 +11,13 @@ determine_base() {
         base=""  # If alg is 'bc', base should be empty
     else
         case "$env" in
-            "PO_Flood-v2"|"PO_Movers-v2"|"overcooked")
+            "PO_Flood-v2"|"PO_Movers-v2")
                 base="DiscreteWorld_base"
                 ;;
-            "LaborDivision2-v2"|"LaborDivision3-v2"|"MultiSubTasks2"|"MultiSubTasks3")
+            "LaborDivision2"|"LaborDivision3")
                 base="LaborDivision_base"
                 ;;
-            "sc2_2s3z"|"sc2_3s5z")
+            "Protoss5v5"|"Terran5v5")
                 base="SC2_base"
                 ;;
             *)
@@ -51,7 +51,7 @@ wait_for_free_slot() {
 }
 
 # Variables
-envs=("overcooked")
+envs=("LaborDivision2" "LaborDivision3" "PO_Movers-v2" "PO_Flood-v2" "Protoss5v5" "Terran5v5")
 algs=("maogail" "magail" "mahil" "iiql" "bc")
 
 exp="1015"
@@ -64,13 +64,6 @@ skip_experiments() {
     local sv=$3
     local seed=$4
 
-    # if [[ "$env" == "sc2_2s3z" && "$alg" == "iiql" && "$sv" == "0.0" && ( "$seed" == "1" || "$seed" == "2" ) ]]; then
-    #     return 0  # Skip this experiment
-    # elif [[ "$env" == "sc2_2s3z" && "$alg" == "maogail" && "$sv" == "0.0" && "$seed" == "2" ]]; then
-    #     return 0  # Skip this experiment
-    # elif [[ "$env" == "sc2_3s5z" && "$alg" == "magail" && "$sv" == "0.0" && ( "$seed" == "1" || "$seed" == "2" ) ]]; then
-    #     return 0  # Skip this experiment
-    # fi
     return 1  # Do not skip
 }
 
@@ -100,7 +93,7 @@ for env in "${envs[@]}"; do
                 echo "Running in tmux session: ${session_name}"
 
                 # Run the experiment in a new detached tmux session, even inside another tmux session
-                tmux new-session -d -s ${session_name} "bash -c 'source ~/venvs/aicoach38/bin/activate && python train_ma_dnn/run_algs.py alg=${alg} env=${env} base=${base} tag='${exp}Seed${seed}Sv${sv}' supervision=${sv} seed=${seed}'"
+                tmux new-session -d -s ${session_name} "bash -c 'source ~/venvs/DTIL/bin/activate && python train_ma_dnn/run_algs.py alg=${alg} env=${env} base=${base} tag='${exp}Seed${seed}Sv${sv}' supervision=${sv} seed=${seed}'"
             done
         done
     done
