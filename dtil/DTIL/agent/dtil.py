@@ -8,13 +8,13 @@ from ...helper.utils import split_by_size, InterfaceHAgent
 
 
 def get_tx_pi_config(config: DictConfig):
-  tx_prefix = "mahil_tx_"
+  tx_prefix = "dtil_tx_"
   config_tx = DictConfig({})
   for key in config:
     if key[:len(tx_prefix)] == tx_prefix:
       config_tx[key[len(tx_prefix):]] = config[key]
 
-  pi_prefix = "mahil_pi_"
+  pi_prefix = "dtil_pi_"
   config_pi = DictConfig({})
   for key in config:
     if key[:len(pi_prefix)] == pi_prefix:
@@ -26,7 +26,7 @@ def get_tx_pi_config(config: DictConfig):
   return config_tx, config_pi
 
 
-class MAHIL(InterfaceHAgent):
+class DTIL(InterfaceHAgent):
 
   def __init__(self, config: DictConfig, obs_dim, action_dim, lat_dim,
                tup_aux_dim, discrete_obs, discrete_act, tup_discrete_aux):
@@ -37,10 +37,10 @@ class MAHIL(InterfaceHAgent):
     self.discrete_act = discrete_act
     self.tup_discrete_aux = tup_discrete_aux
 
-    self.update_strategy = config.mahil_update_strategy
-    self.update_tx_after_pi = config.mahil_tx_after_pi
-    self.alter_update_n_pi_tx = config.mahil_alter_update_n_pi_tx
-    self.order_update_pi_ratio = config.mahil_order_update_pi_ratio
+    self.update_strategy = config.dtil_update_strategy
+    self.update_tx_after_pi = config.dtil_tx_after_pi
+    self.alter_update_n_pi_tx = config.dtil_alter_update_n_pi_tx
+    self.order_update_pi_ratio = config.dtil_order_update_pi_ratio
 
     self.device = torch.device(config.device)
     self.PREV_LATENT = lat_dim
@@ -83,7 +83,7 @@ class MAHIL(InterfaceHAgent):
                                      lat_dim, tup_pi_discrete_obs,
                                      SimpleOptionQNetwork, self._get_pi_iq_vars)
     else:
-      if config.mahil_pi_single_critic:
+      if config.dtil_pi_single_critic:
         critic_base = SingleOptionQCritic
       else:
         critic_base = DoubleOptionQCritic
@@ -156,8 +156,8 @@ class MAHIL(InterfaceHAgent):
     self.tx_update_count += 1
     return tx_loss
 
-  def mahil_update(self, policy_batch, expert_batch, num_updates_per_cycle,
-                   logger, step):
+  def dtil_update(self, policy_batch, expert_batch, num_updates_per_cycle,
+                  logger, step):
     # update pi first and then tx
     ALWAYS_UPDATE_BOTH = 1
     UPDATE_IN_ORDER = 2
@@ -199,7 +199,7 @@ class MAHIL(InterfaceHAgent):
 
     return (loss_1, loss_2) if self.update_tx_after_pi else (loss_2, loss_1)
 
-  def mahil_offline_update(self, expert_batch, logger, step):
+  def dtil_offline_update(self, expert_batch, logger, step):
     TX_USE_TARGET, TX_DO_SOFT_UPDATE = False, False
 
     if self.discrete_act:

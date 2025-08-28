@@ -1,8 +1,0 @@
-# @package _global_
-
-defaults:
-  - LaborDivision_common
-
-env_name: LaborDivision3
-data_path: data/LaborDivision3_100.pkl
-dim_c: [3, 3]

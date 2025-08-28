@@ -51,10 +51,10 @@ def infer_latent_result(dict_agents, list_agent_names, agent_idx, trajectories):
 
 
 def load_test_data(data_dir, env_name):
-  if env_name == "LaborDivision2":
-    data_path = os.path.join(data_dir, "LaborDivision2_100.pkl")
-  elif env_name == "LaborDivision3":
-    data_path = os.path.join(data_dir, "LaborDivision3_100.pkl")
+  if env_name == "MultiJobs2":
+    data_path = os.path.join(data_dir, "MultiJobs2_100.pkl")
+  elif env_name == "MultiJobs3":
+    data_path = os.path.join(data_dir, "MultiJobs3_100.pkl")
   elif env_name == "PO_Flood-v2":
     data_path = os.path.join(data_dir, "PO_Flood-v2_100.pkl")
   elif env_name == "PO_Movers-v2":

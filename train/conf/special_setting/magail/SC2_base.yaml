@@ -1,4 +1,4 @@
 # @package _global_
 
 defaults:
-  - magail/LaborDivision_base
+  - magail/MultiJobs_base

@@ -14,8 +14,8 @@ determine_base() {
             "PO_Flood-v2"|"PO_Movers-v2")
                 base="DiscreteWorld_base"
                 ;;
-            "LaborDivision2"|"LaborDivision3")
-                base="LaborDivision_base"
+            "MultiJobs2"|"MultiJobs3")
+                base="MultiJobs_base"
                 ;;
             "Protoss5v5"|"Terran5v5")
                 base="SC2_base"
@@ -26,8 +26,8 @@ determine_base() {
         esac
     fi
 
-    # Only set possible supervisions if alg is 'mahil' or 'maogail'
-    if [[ "$alg" == "mahil" || "$alg" == "maogail" ]]; then
+    # Only set possible supervisions if alg is 'dtil' or 'maogail'
+    if [[ "$alg" == "dtil" || "$alg" == "maogail" ]]; then
         svs=("0.0" "0.2")
     else
         svs=("0.0")
@@ -51,8 +51,8 @@ wait_for_free_slot() {
 }
 
 # Variables
-envs=("LaborDivision2" "LaborDivision3" "PO_Movers-v2" "PO_Flood-v2" "Protoss5v5" "Terran5v5")
-algs=("maogail" "magail" "mahil" "iiql" "bc")
+envs=("MultiJobs2" "MultiJobs3" "PO_Movers-v2" "PO_Flood-v2" "Protoss5v5" "Terran5v5")
+algs=("maogail" "magail" "dtil" "iiql" "bc")
 
 exp="1015"
 seed_max=3

@@ -64,7 +64,7 @@ def run_alg(config):
 
   fn_env_factory, env_kwargs = envgen.env_generator(config)
 
-  if alg_name == "mahil" or alg_name == "iiql":
+  if alg_name == "dtil" or alg_name == "iiql":
     from dtil.DTIL.train import train
     train(config, demo_path, log_dir, output_dir, fn_env_factory, log_interval,
           eval_interval, env_kwargs)

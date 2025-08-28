@@ -1,8 +1,0 @@
-# @package _global_
-
-defaults:
-  - LaborDivision_common
-
-env_name: LaborDivision2-v2
-data_path: data/LaborDivision2-v2_50.pkl
-dim_c: [2, 2]

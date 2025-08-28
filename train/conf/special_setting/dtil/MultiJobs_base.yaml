@@ -1,6 +1,4 @@
 # @package _global_
 
 defaults:
-  - dtil
-
-alg_name: iiql
+  - dtil_MultiJobs_default

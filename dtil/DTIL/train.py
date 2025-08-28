@@ -12,7 +12,7 @@ from ..helper.utils import (load_multiagent_data_w_labels,
                             infer_mental_states_all_demo,
                             infer_last_next_mental_state, get_expert_batch,
                             get_samples, conv_samples_tup2dict, save, evaluate)
-from .agent import MAHIL, make_mahil_agent
+from .agent import DTIL, make_dtil_agent
 import wandb
 import omegaconf
 from pettingzoo.utils.env import ParallelEnv  # noqa: F401
@@ -70,10 +70,10 @@ def train(config: omegaconf.DictConfig,
   max_explore_step = int(max_explore_step)
 
   # ----- create agents
-  dict_agents = {}  # type: Dict[Any, MAHIL]
+  dict_agents = {}  # type: Dict[Any, DTIL]
   dict_replay_memory = {}  # type: Dict[Any, OptionMemory]
   for agent_idx in range(env.num_agents):
-    agent = make_mahil_agent(config, env, agent_idx)
+    agent = make_dtil_agent(config, env, agent_idx)
     a_name = env.agents[agent_idx]
     dict_agents[a_name] = agent
     dict_replay_memory[a_name] = OptionMemory(n_replay_mem, seed + 1)
@@ -257,7 +257,7 @@ def train(config: omegaconf.DictConfig,
             ])
             expert_batch = get_samples(batch_size, dict_expert_data[a_name])
 
-            dict_tx_losses[a_name], dict_pi_losses[a_name] = agent.mahil_update(
+            dict_tx_losses[a_name], dict_pi_losses[a_name] = agent.dtil_update(
                 policy_batch, expert_batch, config.demo_latent_infer_interval,
                 logger, explore_steps)
 

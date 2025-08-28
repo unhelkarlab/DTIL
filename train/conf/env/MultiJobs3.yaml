@@ -1,0 +1,8 @@
+# @package _global_
+
+defaults:
+  - MultiJobs_common
+
+env_name: MultiJobs3
+data_path: data/MultiJobs3_100.pkl
+dim_c: [3, 3]

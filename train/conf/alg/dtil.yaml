@@ -1,0 +1,45 @@
+# @package _global_
+
+alg_name: dtil
+stream_training: True
+n_update_rounds: 256 # only when stream_training=False
+demo_latent_infer_interval: 1000 # only when stream_training=True
+# update strategy
+dtil_update_strategy: 1 # 1: always update both / 2: update in order / 3: update alternatively
+dtil_tx_after_pi: True
+dtil_alter_update_n_pi_tx: [10, 5]
+dtil_order_update_pi_ratio: 0.5
+# tx
+dtil_tx_activation: relu
+dtil_tx_hidden_critic: [128, 128]
+dtil_tx_optimizer_lr_critic: 3.e-4
+dtil_tx_method_loss: value
+dtil_tx_method_regularize: False
+dtil_tx_method_div: chi
+dtil_tx_init_temp: 1e-4
+dtil_tx_clip_grad_val: null
+dtil_tx_num_actor_update: 1
+dtil_tx_num_critic_update: 1
+# pi
+dtil_pi_activation: relu
+# pi - Q-network
+dtil_pi_hidden_critic: [128, 128]
+dtil_pi_optimizer_lr_critic: 3.e-4
+dtil_pi_method_loss: value
+dtil_pi_method_regularize: True
+dtil_pi_method_div: ""
+dtil_pi_num_critic_update: 1
+dtil_pi_single_critic: True
+# pi - actor
+dtil_pi_hidden_policy: [128, 128]
+dtil_pi_optimizer_lr_policy: 3.e-4
+dtil_pi_log_std_bounds: [-5., 2.]
+dtil_pi_num_actor_update: 1
+dtil_pi_clip_grad_val: null
+dtil_pi_bounded_actor: True
+dtil_pi_use_nn_logstd: True
+dtil_pi_clamp_action_logstd: False # True: use clamp() / False: use tanh
+# pi - alpha
+dtil_pi_optimizer_lr_alpha: 3.e-4
+dtil_pi_init_temp: 1e-2
+dtil_pi_learn_temp: False

@@ -268,7 +268,7 @@ def generate_data(save_dir, env_name, n_traj):
 if __name__ == "__main__":
   cur_dir = os.path.dirname(__file__)
 
-  # traj = generate_data(cur_dir, LDExpert, "LaborDivision2", 100, False, 300)
-  # traj = generate_data(None, LDExpert, "LaborDivision2", 10, False, 100)
+  # traj = generate_data(cur_dir, LDExpert, "MultiJobs2", 100, False, 300)
+  # traj = generate_data(None, LDExpert, "MultiJobs2", 10, False, 100)
   # traj = generate_data(cur_dir, "Protoss5v5", 100)
   traj = generate_data(cur_dir, "Terran5v5", 100)

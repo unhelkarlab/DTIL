@@ -31,7 +31,6 @@ def learn(config: omegaconf.DictConfig,
   env_name = config.env_name
   num_episodes = config.num_eval_episodes
 
-  # env_type = config.env_type
   # use_pretrain = config.use_pretrain
   # n_thread = config.n_thread
   # n_iter = config.n_pretrain_epoch

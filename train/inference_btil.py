@@ -85,20 +85,6 @@ def infer_latent_result_btil(model_dir, env_name, agent_idx, supervision,
   return accuracy
 
 
-def load_test_data(env_name):
-  data_dir = "/home/sangwon/Projects/ai_coach/analysis/MAHIL_results/test_data/"
-  if env_name == "PO_Flood-v2":
-    data_path = os.path.join(data_dir, "PO_Flood-v2_100.pkl")
-  elif env_name == "PO_Movers-v2":
-    data_path = os.path.join(data_dir, "PO_Movers-v2_100.pkl")
-  else:
-    raise ValueError(f"Unknown env_name: {env_name}")
-
-  trajectories = load_trajectories(data_path, 100)
-
-  return trajectories
-
-
 class BTIL_Agent:
 
   def __init__(self, pi, tx, bx,
@@ -131,7 +117,8 @@ if __name__ == "__main__":
   INFERENCE = False
   EVAL_REWARD = True
 
-  model_dir = "/home/sangwon/Projects/ai_coach/train_ma_dnn/result/btil_models/"
+  cur_dir = os.path.dirname(__file__)
+  model_dir = os.path.join(cur_dir, "result/btil_models/")
   if EVAL_REWARD:
     env_name = "PO_Movers-v2"
     if env_name == "PO_Movers-v2":
@@ -168,7 +155,8 @@ if __name__ == "__main__":
 
     list_results = []
     for env_name in env_names:
-      trajectories = load_test_data(env_name)
+      test_data_dir = os.path.join(cur_dir, "test_data/")
+      trajectories = inference.load_test_data(test_data_dir, env_name)
       if env_name == "PO_Movers-v2":
         converter = run_btil.Converter_PO_Movers()
       elif env_name == "PO_Flood-v2":

@@ -1,6 +1,5 @@
 import os
 import random
-import math
 from typing import Type
 import pickle
 import functools
@@ -12,13 +11,12 @@ import numpy as np
 import cv2
 from PIL import Image
 from pettingzoo import ParallelEnv
-from tqdm import tqdm
 
 
-class MultiSubTasks(ParallelEnv):
+class MultiJobs(ParallelEnv):
   metadata = {"render_modes": ["human"], "name": "multi_professionals"}
 
-  def __init__(self, n_targets, n_agents, render_mode=None):
+  def __init__(self, targets, n_agents, render_mode=None):
     """
         The init method takes in environment arguments and should define 
         the following attributes:
@@ -45,14 +43,14 @@ class MultiSubTasks(ParallelEnv):
 
     # define task world
     self.max_step = 50
-    self.n_targets = n_targets
+    self.np_targets = np.array(targets)
     self.dict_agent_pos = {}
     #  -  target status: 0 means ready. positive values mean progress
     #                    negative values mean remaining time to get ready
     #                    each column corresponds to each agent.
     self.restock_time = 15
     self.max_progress = 5
-    self.target_status = np.zeros((n_targets, n_agents))
+    self.target_status = np.zeros((len(self.np_targets), n_agents))
     self.tolerance = 0.5
     self.noise_amp = 0.1
 
@@ -78,14 +76,12 @@ class MultiSubTasks(ParallelEnv):
   def observation_space(self, agent):
     # gymnasium spaces are defined and documented here:
     #    https://gymnasium.farama.org/api/spaces/
-    self.n_targets
     n_agents = len(self.possible_agents)
-    obs_low = np.array([*self.world_low, 0] +
-                       [0, -self.vis_rad, -self.vis_rad] * (n_agents - 1) +
-                       [*self.world_low] * self.n_targets)
-    obs_high = np.array([*self.world_high, 1] +
-                        [1, self.vis_rad, self.vis_rad] * (n_agents - 1) +
-                        [*self.world_high] * self.n_targets)
+    obs_low = np.array([*self.world_low, -1, -1, 0] +
+                       [0, -self.vis_rad, -self.vis_rad, -1, -1] *
+                       (n_agents - 1))
+    obs_high = np.array([*self.world_high, 1, 1, 1] +
+                        [1, self.vis_rad, self.vis_rad, 1, 1] * (n_agents - 1))
 
     return Box(low=obs_low, high=obs_high, dtype=np.float32)
 
@@ -106,26 +102,10 @@ class MultiSubTasks(ParallelEnv):
     for idx, target in enumerate(self.np_targets):
       target_pt = self.env_pt_2_scr_pt(target)
 
-      x_m = int(target_pt[0] - self.img_location.shape[1] / 2)
-      y_m = int(target_pt[1] - self.img_location.shape[0] / 2)
-
-      x_M = x_m + self.img_location.shape[1]
-      y_M = y_m + self.img_location.shape[0]
-
-      x_m = max(0, x_m)
-      y_m = max(0, y_m)
-      x_M = min(canvas_new.shape[1], x_M)
-      y_M = min(canvas_new.shape[0], y_M)
-
-      x_c = self.img_location.shape[1] // 2
-      y_c = self.img_location.shape[0] // 2
-
-      x_l = x_c - (target_pt[0] - x_m)
-      x_h = x_c + (x_M - target_pt[0])
-      y_l = y_c - (target_pt[1] - y_m)
-      y_h = y_c + (y_M - target_pt[1])
-
-      canvas_new[y_m:y_M, x_m:x_M] = self.img_location[y_l:y_h, x_l:x_h]
+      x_p = int(target_pt[0] - self.img_location.shape[1] / 2)
+      y_p = int(target_pt[1] - self.img_location.shape[0] / 2)
+      canvas_new[y_p:y_p + self.img_location.shape[0],
+                 x_p:x_p + self.img_location.shape[1]] = self.img_location
 
       # color = (255, 0, 0)
       # canvas_new = cv2.circle(canvas_new, target_pt,
@@ -142,26 +122,10 @@ class MultiSubTasks(ParallelEnv):
       pos = self.dict_agent_pos[agent]
       pos_pt = self.env_pt_2_scr_pt(pos)
 
-      x_m = int(pos_pt[0] - self.img_agents[aidx].shape[1] / 2)
-      y_m = int(pos_pt[1] - self.img_agents[aidx].shape[0] / 2)
-
-      x_M = x_m + self.img_agents[aidx].shape[1]
-      y_M = y_m + self.img_agents[aidx].shape[0]
-
-      x_m = max(0, x_m)
-      y_m = max(0, y_m)
-      x_M = min(canvas.shape[1], x_M)
-      y_M = min(canvas.shape[0], y_M)
-
-      x_c = self.img_agents[aidx].shape[1] // 2
-      y_c = self.img_agents[aidx].shape[0] // 2
-
-      x_l = x_c - (pos_pt[0] - x_m)
-      x_h = x_c + (x_M - pos_pt[0])
-      y_l = y_c - (pos_pt[1] - y_m)
-      y_h = y_c + (y_M - pos_pt[1])
-
-      canvas[y_m:y_M, x_m:x_M] = self.img_agents[aidx][y_l:y_h, x_l:x_h]
+      x_p = int(pos_pt[0] - self.img_agents[aidx].shape[1] / 2)
+      y_p = int(pos_pt[1] - self.img_agents[aidx].shape[0] / 2)
+      canvas[y_p:y_p + self.img_agents[aidx].shape[0],
+             x_p:x_p + self.img_agents[aidx].shape[1]] = self.img_agents[aidx]
 
       color = colors[aidx]
       # canvas = cv2.circle(canvas, pos_pt, 10, color, -1)
@@ -176,7 +140,7 @@ class MultiSubTasks(ParallelEnv):
           "You are calling render method without specifying any render mode.")
       return
     elif self.render_mode == "human":
-      cv2.imshow("LaborDivision", self.get_canvas())
+      cv2.imshow("MultiJobs", self.get_canvas())
       cv2.waitKey(self.delay)
       return
     pass
@@ -206,7 +170,7 @@ class MultiSubTasks(ParallelEnv):
     dict_obs = {}
     for agent_me in self.possible_agents:
       my_pos = self.dict_agent_pos[agent_me]
-      obs = [my_pos]
+      obs = [my_pos, actions[agent_me]]
 
       # progressing?
       progressing, _ = self._get_progressing_state(agent_me)
@@ -218,14 +182,11 @@ class MultiSubTasks(ParallelEnv):
           continue
         # relative position. if out of visible range, set it as not-observed
         rel_pos = self.dict_agent_pos[agent_fr] - my_pos
-        fr_state = [1, *rel_pos]
+        fr_state = [1, *rel_pos, *actions[agent_fr]]
         if np.linalg.norm(rel_pos) > self.vis_rad:
-          fr_state = [0, 0, 0]
+          fr_state = [0, 0, 0, 0, 0]
 
         obs.append(fr_state)
-
-      # sub-task locations
-      obs.append(self.np_targets.reshape(-1))
 
       dict_obs[agent_me] = np.hstack(obs)
 
@@ -262,37 +223,6 @@ class MultiSubTasks(ParallelEnv):
 
     return dist_fr2tar
 
-  @staticmethod
-  def generate_targets(num_targets,
-                       radius,
-                       min_distance,
-                       world_low,
-                       world_high,
-                       center_clear_radius=0):
-
-    def distance(x1, y1, x2, y2):
-      return math.sqrt((x1 - x2)**2 + (y1 - y2)**2)
-
-    targets = []
-
-    diameter = 2 * radius
-    cen_x, cen_y = (world_low + world_high) / 2
-
-    while len(targets) < num_targets:
-      # Randomly place a new target within the bounds of the space (considering the radius)
-      x = random.uniform(world_low[0] + radius, world_high[0] - radius)
-      y = random.uniform(world_low[1] + radius, world_high[1] - radius)
-      if distance(x, y, cen_x, cen_y) < center_clear_radius:
-        continue
-
-      # Check if the new target overlaps with any existing targets
-      if all(
-          distance(x, y, tx, ty) >= (diameter + min_distance)
-          for tx, ty in targets):
-        targets.append((x, y))
-
-    return targets
-
   def reset(self, seed=None, options=None):
     """
         Reset needs to initialize the `agents` attribute and must set up the
@@ -317,17 +247,7 @@ class MultiSubTasks(ParallelEnv):
           np.random.uniform(self.world_low + margin, self.world_high - margin)
           for aname in range(n_agents)
       }
-
-    # sample target positions
-    targets = MultiSubTasks.generate_targets(self.n_targets,
-                                             self.tolerance,
-                                             4,
-                                             self.world_low,
-                                             self.world_high,
-                                             center_clear_radius=3)
-    self.np_targets = np.array(targets)
-
-    self.target_status = np.zeros((self.n_targets, n_agents))
+    self.target_status = np.zeros((len(self.np_targets), n_agents))
 
     actions = {agent: np.zeros(2) for agent in self.agents}
     observations = self._compute_obs(actions)
@@ -390,67 +310,95 @@ class MultiSubTasks(ParallelEnv):
     return observations, rewards, dones, truncs, infos
 
 
-class MultiSubTasksDyadTwoTargets(MultiSubTasks):
+class DyadMultiJobs(MultiJobs):
+
+  def __init__(self, targets, render_mode=None):
+    super().__init__(targets, n_agents=2, render_mode=render_mode)
+
+
+class TwoTargetDyadMultiJobs(DyadMultiJobs):
 
   def __init__(self, render_mode=None):
-    super().__init__(n_targets=2, n_agents=2, render_mode=render_mode)
+    super().__init__([(-4, 0), (4, 0)], render_mode)
 
 
-class MultiSubTasksDyadThreeTargets(MultiSubTasks):
+class ThreeTargetDyadMultiJobs(DyadMultiJobs):
 
   def __init__(self, render_mode=None):
-    super().__init__(n_targets=3, n_agents=2, render_mode=render_mode)
+    super().__init__([(-4, -3), (4, -3), (0, 4)], render_mode)
 
 
-class MultiSubTasksExpert:
+class LDExpert:
 
-  def __init__(self, n_agents, n_targets, tolerance, name) -> None:
+  def __init__(self, env, tolerance, name) -> None:
     self.PREV_LATENT = None
-    self.PREV_AUX = None  # for compatibility with MAHIL agent
-    self.n_agents = n_agents
-    self.n_targets = n_targets
-    self.tolerance = tolerance
+    self.PREV_AUX = None  # for compatibility with DTIL agent
+    self.env = env
+    self.n_agents = len(env.possible_agents)
+    self.np_targets = env.np_targets
     self.name = name
 
   def conv_obs(self, obs):
     pos = obs[0:2]
-    progressing = obs[2]
+    act = obs[2:4]
+    progressing = obs[4]
 
     # let's think about only dyad setting
-    observed = obs[3]
-    rel_pos = obs[4:6]
-
-    np_targets = obs[6:].reshape(-1, 2)
-
-    return pos, progressing, observed, rel_pos, np_targets
+    observed = obs[5]
+    rel_pos = obs[6:8]
+    act_fr = obs[8:10]
+    return pos, act, progressing, observed, rel_pos, act_fr
 
   def choose_mental_state(self, obs, prev_latent, aux=None, sample=False):
-    if prev_latent == self.PREV_LATENT:
-      return np.random.choice(range(self.n_targets))
+    # NOTE:
+    # near target / progressing
+    #   --> maintain current target regardless of other agent
+    # near target / not progressing
+    #   --> need to change target. predict where the other agent goes.
+    #     --> if it comes to current one / stays --> i go the other one
+    #     --> if it goes the other one
+    #       -->if there is remaining target --> go to the remaining one
+    #       --> no remaining target --> either stay here or go to other
+    #         --> if i am closer to the target --> change to that one
+    #         --> otherwise --> stay put
+    # not near target --> predict where the other agent goes
+    #   --> if friend is near target
+    #     --> going to the target / staying --> i go to the other target
+    #     --> heading to other target --> maintain my target
+    #   --> friend not near target
+    #     --> friend go to other target --> maintain my target
+    #     --> friend go to my target --> i change target only if i am further.
 
-    pos, progressing, observed, rel_pos, np_targets = self.conv_obs(obs)
+    if prev_latent == self.PREV_LATENT:
+      return np.random.choice(range(len(self.np_targets)))
+
+    pos, act, progressing, observed, rel_pos, act_fr = self.conv_obs(obs)
 
     # find the closest target
     clst_tidx = -1
     min_dist = 999999
-    for tidx, target in enumerate(np_targets):
+    for tidx, target in enumerate(self.np_targets):
       dist = np.linalg.norm(target - pos)
       if min_dist > dist:
         min_dist = dist
         clst_tidx = tidx
 
     not_clst_tidx = [
-        tidx for tidx in range(len(np_targets)) if tidx != clst_tidx
+        tidx for tidx in range(len(self.np_targets)) if tidx != clst_tidx
+    ]
+    not_prev_tidx = [
+        tidx for tidx in range(len(self.np_targets)) if tidx != prev_latent
     ]
 
     prev_neq_clst = prev_latent != clst_tidx
     sample_from_not_clst = prev_latent if prev_neq_clst else np.random.choice(
         not_clst_tidx)
+    sample_from_not_prev = np.random.choice(not_prev_tidx)
 
     # no nearby agent
     if observed == 0:
       # near a target but not progressing
-      if min_dist <= self.tolerance and progressing == 0:
+      if min_dist <= self.env.tolerance and progressing == 0:
         return sample_from_not_clst
       else:
         return prev_latent
@@ -459,21 +407,85 @@ class MultiSubTasksExpert:
       # progressing  --> maintain current target regardless of friend
       if progressing == 1:
         return prev_latent
-      # not progressing --> may need changing target.
-      #                     no prediction regarding other agent action
+      # not progressing --> may need changing target. predict where friend goes.
       else:
-        # all random sample
-        return np.random.choice(range(len(np_targets)))
+        # predict which target the friend is going
+        pos_fr = pos + rel_pos  # friend position
+        prev_pos_fr = pos_fr - act_fr
+        fr_staying = np.linalg.norm(act_fr) < 0.2
+        max_inner = -9999999
+        fr_tidx = -1
+        for tidx, target in enumerate(self.np_targets):
+          direction = target - prev_pos_fr
+          len_dir = np.linalg.norm(direction)
+          if len_dir != 0:
+            direction /= len_dir
+          inner = np.dot(direction, act_fr)
+          if inner > max_inner:
+            max_inner = inner
+            fr_tidx = tidx
+
+        # near target.
+        if min_dist <= self.env.tolerance:
+          # if friend comes to current one / stays put --> i go the other one
+          if fr_tidx == clst_tidx or fr_staying:
+            return sample_from_not_clst
+          # if friend goes to the other one
+          else:
+            # if there is remaining target --> go to the remaining one
+            if len(self.np_targets) > 2:
+              remaining_tidx = []
+              for tidx in not_clst_tidx:
+                if fr_tidx != tidx:
+                  remaining_tidx.append(tidx)
+              return (prev_latent if prev_latent in remaining_tidx else
+                      np.random.choice(remaining_tidx))
+            # no remaining target --> either stay here or go to other
+            else:
+              # if i am closer to the current latent target --> go to that one
+              if (np.linalg.norm(self.np_targets[prev_latent] - pos)
+                  < np.linalg.norm(self.np_targets[prev_latent] - pos_fr)):
+                return prev_latent
+              else:
+                return len(self.np_targets) - 1 - prev_latent
+        # not near target
+        else:
+          # if friend is already near my target
+          if (np.linalg.norm(self.np_targets[prev_latent] - pos_fr)
+              <= self.env.tolerance):
+            IMMEDIATE_CHANGE = False
+            if IMMEDIATE_CHANGE:
+              # friend is going to my target / staying there --> i go to the other one
+              if fr_tidx == prev_latent or fr_staying:
+                return sample_from_not_prev
+              # friend heading to other target --> maintain my target
+              else:
+                return prev_latent
+            else:  # maintain current latent (wait for friend to finish first)
+              return prev_latent
+          # friend is not near my target
+          else:
+            # friend goes to my target
+            if fr_tidx == prev_latent:
+              # if friend is closer to the target
+              if (np.linalg.norm(self.np_targets[prev_latent] - pos_fr)
+                  < np.linalg.norm(self.np_targets[prev_latent] - pos)):
+                return sample_from_not_prev
+              else:
+                return prev_latent
+            # friend goes to the other target
+            else:
+              return prev_latent
 
   def choose_policy_action(self, obs, latent, sample=False):
 
-    pos, progressing, observed, rel_pos, np_targets = self.conv_obs(obs)
+    pos, act, progressing, observed, rel_pos, act_fr = self.conv_obs(obs)
 
     pos_fr = pos + rel_pos
     # if friend is near the target while im not --> wait with some distance
-    if observed == 1 and (np.linalg.norm(np_targets[latent] - pos_fr)
-                          <= self.tolerance):
-      target = np_targets[latent]
+    if observed == 1 and (np.linalg.norm(self.np_targets[latent] - pos_fr)
+                          <= self.env.tolerance):
+      target = self.np_targets[latent]
       vec_dir = target - pos
       len_dir = np.linalg.norm(vec_dir)
 
@@ -484,13 +496,13 @@ class MultiSubTasksExpert:
         assert d_ori2tar > 0
         vec_dir = target / d_ori2tar
 
-      len_move = np.clip(len_dir - (self.tolerance + 0.5), -0.7, 0.7)
+      len_move = np.clip(len_dir - (self.env.tolerance + 0.5), -0.7, 0.7)
       vec_dir *= len_move
 
       return vec_dir
 
     else:
-      target = np_targets[latent]
+      target = self.np_targets[latent]
       vec_dir = target - pos
       len_dir = np.linalg.norm(vec_dir)
       if len_dir >= 1:
@@ -504,33 +516,72 @@ class MultiSubTasksExpert:
     return option, action
 
 
+class LDExpert_V2(LDExpert):
+
+  def choose_mental_state(self, obs, prev_latent, aux=None, sample=False):
+    if prev_latent == self.PREV_LATENT:
+      return np.random.choice(range(len(self.np_targets)))
+
+    pos, act, progressing, observed, rel_pos, act_fr = self.conv_obs(obs)
+
+    # find the closest target
+    clst_tidx = -1
+    min_dist = 999999
+    for tidx, target in enumerate(self.np_targets):
+      dist = np.linalg.norm(target - pos)
+      if min_dist > dist:
+        min_dist = dist
+        clst_tidx = tidx
+
+    not_clst_tidx = [
+        tidx for tidx in range(len(self.np_targets)) if tidx != clst_tidx
+    ]
+
+    prev_neq_clst = prev_latent != clst_tidx
+    sample_from_not_clst = prev_latent if prev_neq_clst else np.random.choice(
+        not_clst_tidx)
+
+    # no nearby agent
+    if observed == 0:
+      # near a target but not progressing
+      if min_dist <= self.env.tolerance and progressing == 0:
+        return sample_from_not_clst
+      else:
+        return prev_latent
+    # agents exist nearby
+    else:
+      # progressing  --> maintain current target regardless of friend
+      if progressing == 1:
+        return prev_latent
+      # not progressing --> may need changing target.
+      #                     no prediction regarding other agent action
+      else:
+        # all random sample
+        return np.random.choice(range(len(self.np_targets)))
+
+
 def generate_data(save_dir,
-                  expert_class: Type[MultiSubTasksExpert],
+                  expert_class: Type[LDExpert],
                   env_name,
                   n_traj,
                   render=False,
                   render_delay=10):
   expert_trajs = defaultdict(list)
-  if env_name == "MultiSubTasks2":
-    env = MultiSubTasksDyadTwoTargets(render_mode="human")
-  elif env_name == "MultiSubTasks3":
-    env = MultiSubTasksDyadThreeTargets(render_mode="human")
+  if env_name == "MultiJobs2":
+    env = TwoTargetDyadMultiJobs(render_mode="human")
+  elif env_name == "MultiJobs3":
+    env = ThreeTargetDyadMultiJobs(render_mode="human")
   else:
     raise NotImplementedError()
 
-  env.reset()
-
-  n_targets = env.n_targets
-  n_agents = env.num_agents
-  tolerance = env.tolerance
   env.set_render_delay(render_delay)
   agents = {
-      aname: expert_class(n_agents, n_targets, tolerance, aname)
+      aname: expert_class(env, env.tolerance, aname)
       for aname in env.possible_agents
   }
 
   list_total_reward = []
-  for _ in tqdm(range(n_traj)):
+  for _ in range(n_traj):
     obs, infos = env.reset()
     prev_latents = {aname: agents[aname].PREV_LATENT for aname in env.agents}
     episode_reward = {aname: 0 for aname in env.agents}
@@ -594,7 +645,7 @@ def generate_data(save_dir,
 if __name__ == "__main__":
   cur_dir = os.path.dirname(__file__)
 
-  # traj = generate_data(None, MultiSubTasksExpert, "MultiSubTasks3", 100,
-  #                      True, 10)
-  traj = generate_data(cur_dir, MultiSubTasksExpert, "MultiSubTasks2", 100,
-                       False, 10)
+  # traj = generate_data(cur_dir, LDExpert, "MultiJobs2", 100, False, 300)
+  # traj = generate_data(None, LDExpert, "MultiJobs2", 10, False, 100)
+  traj = generate_data(cur_dir, LDExpert_V2, "MultiJobs2", 100, False, 100)
+  traj = generate_data(cur_dir, LDExpert_V2, "MultiJobs3", 100, False, 100)

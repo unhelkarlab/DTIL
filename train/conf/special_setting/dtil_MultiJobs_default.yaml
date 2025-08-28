@@ -1,0 +1,27 @@
+# @package _global_
+
+n_sample: 30000
+update_interval: 10
+mini_batch_size: 256
+demo_latent_infer_interval: 1000
+# tx
+dtil_tx_hidden_critic: [128, 128]
+dtil_tx_optimizer_lr_critic: 3.e-4
+dtil_tx_method_loss: value
+dtil_tx_method_regularize: False
+dtil_tx_method_div: chi
+dtil_tx_init_temp: 1e-2
+# pi
+dtil_pi_hidden_critic: [128, 128]
+dtil_pi_optimizer_lr_critic: 3.e-4
+dtil_pi_method_loss: value
+dtil_pi_method_regularize: True
+dtil_pi_single_critic: True
+dtil_pi_hidden_policy: [128, 128]
+dtil_pi_optimizer_lr_policy: 1.e-4
+dtil_pi_init_temp: 1e-2
+dtil_pi_learn_temp: False
+
+# exp settings 
+max_explore_step: 5e5
+eval_interval: 10000

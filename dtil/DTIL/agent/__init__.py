@@ -1,10 +1,10 @@
-from .mahil import MAHIL
+from .dtil import DTIL
 from omegaconf import DictConfig
 from pettingzoo.utils.env import ParallelEnv
 from gymnasium.spaces import Discrete, Box
 
 
-def make_mahil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
+def make_dtil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
 
   agent_name = env.agents[agent_idx]
   latent_dim = config.dim_c[agent_idx]
@@ -39,6 +39,6 @@ def make_mahil_agent(config: DictConfig, env: ParallelEnv, agent_idx):
       list_aux_dim.append(tmp_action_dim)
       list_discrete_aux.append(tmp_discrete_act)
 
-  agent = MAHIL(config, obs_dim, action_dim, latent_dim, tuple(list_aux_dim),
-                discrete_obs, discrete_act, tuple(list_discrete_aux))
+  agent = DTIL(config, obs_dim, action_dim, latent_dim, tuple(list_aux_dim),
+               discrete_obs, discrete_act, tuple(list_discrete_aux))
   return agent

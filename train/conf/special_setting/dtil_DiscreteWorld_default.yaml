@@ -1,11 +1,11 @@
 # @package _global_
 
 defaults:
-  - mahil_LaborDivision_default
+  - dtil_MultiJobs_default
 
-mahil_pi_method_div: chi
-mahil_pi_method_loss: value
-mahil_pi_method_regularize: False
+dtil_pi_method_div: chi
+dtil_pi_method_loss: value
+dtil_pi_method_regularize: False
 
 n_sample: 5000
 demo_latent_infer_interval: 200

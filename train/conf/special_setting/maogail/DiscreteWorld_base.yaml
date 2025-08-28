@@ -1,4 +1,4 @@
 # @package _global_
 
 defaults:
-  - maogail/LaborDivision_base
+  - maogail/MultiJobs_base
