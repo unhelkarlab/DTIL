@@ -93,7 +93,7 @@ for env in "${envs[@]}"; do
                 echo "Running in tmux session: ${session_name}"
 
                 # Run the experiment in a new detached tmux session, even inside another tmux session
-                tmux new-session -d -s ${session_name} "bash -c 'source ~/venvs/DTIL/bin/activate && python train_ma_dnn/run_algs.py alg=${alg} env=${env} base=${base} tag='${exp}Seed${seed}Sv${sv}' supervision=${sv} seed=${seed}'"
+                tmux new-session -d -s ${session_name} "bash -c 'source ~/venvs/DTIL/bin/activate && python train/run_algs.py alg=${alg} env=${env} base=${base} tag='${exp}Seed${seed}Sv${sv}' supervision=${sv} seed=${seed}'"
             done
         done
     done

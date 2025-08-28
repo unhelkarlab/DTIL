@@ -64,13 +64,10 @@ def run_alg(config):
 
   fn_env_factory, env_kwargs = envgen.env_generator(config)
 
-  test_data_path = os.path.join(config.base_dir, 'test_data')
-  inf_acc = InferenceAccuracy(test_data_path, config.env_name)
-
   if alg_name == "mahil" or alg_name == "iiql":
     from dtil.DTIL.train import train
     train(config, demo_path, log_dir, output_dir, fn_env_factory, log_interval,
-          eval_interval, env_kwargs, inf_acc.compute_inference_accuracy)
+          eval_interval, env_kwargs)
   elif alg_name == "maogail":
     from dtil.baselines.ma_ogail.train import learn
     learn(config, True, demo_path, log_dir, output_dir, fn_env_factory,

@@ -9,7 +9,6 @@ from dtil.pettingzoo_envs.multi_subtasks import (MultiSubTasksDyadTwoTargets,
 from pettingzoo.mpe import (simple_crypto_v3, simple_push_v3,
                             simple_adversary_v3, simple_speaker_listener_v4,
                             simple_spread_v3, simple_tag_v3)
-from dtil.pettingzoo_envs.overcooked import Overcooked
 
 
 def env_generator(config):
@@ -41,11 +40,6 @@ def env_generator(config):
     return MultiSubTasksDyadTwoTargets, {}
   elif env_name == "MultiSubTasks3":
     return MultiSubTasksDyadThreeTargets, {}
-  elif env_name == "overcooked":
-    return Overcooked, {}
-  elif env_name[:4] == "sc2_":
-    from dtil.pettingzoo_envs.smac_v1_env import SMAC_V1
-    return SMAC_V1, {"map_name": env_name[4:]}
   # Multi Particle Environments (MPE)
   elif env_name == "simple_crypto":
     kwargs = {"continuous_actions": False}

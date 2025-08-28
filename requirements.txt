@@ -1,4 +1,3 @@
 BTIL @ git+https://github.com/unhelkarlab/BTIL.git@main
 Team_Markov_Model @ git+https://github.com/unhelkarlab/Team_Markov_Model.git@main
-gym-cooking @ git+https://github.com/sangwon-seo/gym-cooking.git@main
-smac @ git+https://github.com/oxwhirl/smac.git@master
+smacv2 @ git+https://github.com/oxwhirl/smacv2.git@main
