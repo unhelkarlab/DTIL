@@ -25,7 +25,7 @@ Also, unzip `train/training_data.zip` into the `train/data/` directory.
 ## Training
 To train an algorithm on a specific domain with a given supervision degree (0.0-1.0), run:
 ```
-python train/run_algs.py alg=ALG_NAME env=ENV_NAME base=ENV_BASE supervision=SUPERVISION_DEGREE
+python train/run_algs.py alg=ALG_NAME env=ENV_NAME base=ENV_BASE supervision=SV_DEGREE
 ```
 
 To run all experiments: 
