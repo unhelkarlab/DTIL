@@ -15,5 +15,5 @@ setup(name="dtil",
       install_requires=[
           'numpy', 'tqdm', 'scipy', 'sparse', 'torch', 'termcolor',
           'tensorboard', 'hydra-core>=1.3', 'wandb>=0.15', 'pettingzoo',
-          'pygame', 'opencv-python', 'pillow', 'pandas'
+          'pygame', 'opencv-python', 'pillow', 'pandas', 'gym==0.17.2'
       ])

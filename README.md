@@ -1,18 +1,37 @@
 # Deep Team Imitation Learner
-This repository contains an implementation of DTIL proposed in `Hierarchical Imitation Learning of Team Behavior from Heterogeneous Demonstrations`, AAMAS 2025.
-
-> ⚠️ **This repository is currently undergoing cleanup. This warning will be removed once the cleanup is complete. Documentation will also be refined as part of the finalization process.**
+This repository contains the implementation of **DTIL**, proposed in `Hierarchical Imitation Learning of Team Behavior from Heterogeneous Demonstrations`, AAMAS 2025.
 
 ## Installation
-Clone this repository to your local machine and install it with the following commands:
+We have tested this implementation with **Python 3.8**. Please use a virutal environment for setup.
+
+Clone this repository and install it with the following commands:
 ```
 cd DTIL/
 pip install -e .
+pip install -r requirements.txt
 ```
+
+Next, download [on-policy](https://github.com/marlbenchmark/on-policy.git) package and install it:
+```
+git clone https://github.com/marlbenchmark/on-policy.git
+pip install -e ./on-policy
+```
+
+Finally, install StarCraft II following the instructions provided in [SMACv2](https://github.com/oxwhirl/smacv2?tab=readme-ov-file#getting-started).
+
+Also, unzip `train/training_data.zip` into the `train/data/` directory.
 
 
 ## Training
-Please run `train/scripts/run_all.sh`.
+To train an algorithm on a specific domain with a given supervision degree (0.0-1.0), run:
+```
+python train/run_algs.py alg=ALG_NAME env=ENV_NAME base=ENV_BASE supervision=SUPERVISION_DEGREE
+```
+
+To run all experiments: 
+```
+train/scripts/run_all.sh
+```
 
 ## Citation
 ```
